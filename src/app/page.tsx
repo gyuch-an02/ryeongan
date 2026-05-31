@@ -37,41 +37,44 @@ export default function Lobby() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <main className="min-h-screen flex items-center justify-center p-6 font-serif overflow-auto">
+      <div className="w-full max-w-sm">
+
         <div className="text-center mb-10">
-          <h1 className="text-3xl tracking-[0.3em] text-ink-text mb-3">유 천 당</h1>
-          <p className="text-ink-dim text-sm leading-relaxed">
+          <h1 className="font-display font-extrabold text-[38px] tracking-[0.18em] text-ink-text mb-4">
+            밍구라온
+          </h1>
+          <p className="font-serif text-sm text-ink-soft leading-relaxed">
             둘이 함께 보는 것이 다르다.
             <br />
             종로 3가, 보이지 않는 것들의 세계.
           </p>
         </div>
 
-        <div className="bg-ink-panel border border-ink-border rounded-lg p-6 space-y-5">
+        <div className="border border-ink-border rounded-ink bg-ink-panel p-6 space-y-5">
           <label className="block">
-            <span className="text-ink-dim text-xs">이름</span>
+            <span className="font-mono text-[11px] tracking-label uppercase text-ink-dim">이름</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               onBlur={saveName}
               placeholder="당신의 이름"
               maxLength={16}
-              className="mt-1 w-full bg-ink-bg border border-ink-border rounded px-3 py-2 text-ink-text outline-none focus:border-ink-accent"
+              className="mt-2 w-full bg-ink-panel2 border border-ink-border rounded-ink px-3 py-2.5 text-ink-text font-serif placeholder:text-[#5c514b] outline-none focus:border-[#4a3a32] transition-colors"
             />
           </label>
 
           <button
             onClick={createSession}
             disabled={busy}
-            className="w-full bg-ink-accent/20 border border-ink-accent text-ink-text rounded py-2.5 hover:bg-ink-accent/30 transition disabled:opacity-50"
+            className="choice justify-center disabled:opacity-50"
           >
-            {busy ? "세션 생성 중…" : "새 세션 만들기"}
+            <span className="txt">{busy ? "세션 생성 중…" : "새 세션 만들기"}</span>
           </button>
 
-          <div className="flex items-center gap-3 text-ink-dim text-xs">
+          <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-ink-border" />
-            또는 코드로 참가
+            <span className="font-mono text-[10px] tracking-[0.15em] uppercase text-ink-dim">또는 코드로 참가</span>
             <div className="h-px flex-1 bg-ink-border" />
           </div>
 
@@ -82,18 +85,18 @@ export default function Lobby() {
               onKeyDown={(e) => e.key === "Enter" && joinSession()}
               placeholder="세션 코드"
               maxLength={5}
-              className="flex-1 bg-ink-bg border border-ink-border rounded px-3 py-2 text-ink-text tracking-[0.3em] text-center outline-none focus:border-ink-accent"
+              className="flex-1 bg-ink-panel2 border border-ink-border rounded-ink px-3 py-2.5 text-ink-text font-mono tracking-[0.3em] text-center placeholder:text-[#5c514b] outline-none focus:border-[#4a3a32] transition-colors"
             />
             <button
               onClick={joinSession}
-              className="px-5 bg-ink-bg border border-ink-border rounded hover:border-ink-accent transition"
+              className="flex-shrink-0 border border-ink-border rounded-ink px-4 font-mono text-[11px] tracking-[0.14em] text-ink-soft hover:border-ink-accent hover:text-ink-accent transition-colors"
             >
               참가
             </button>
           </div>
         </div>
 
-        <p className="text-ink-dim text-xs text-center mt-6 leading-relaxed">
+        <p className="font-mono text-[10px] tracking-[0.08em] text-ink-dim text-center mt-6 leading-relaxed">
           2인 협력 전용. 세션을 만들어 코드를 친구에게 전하세요.
           <br />
           둘 다 접속해야 이야기가 시작됩니다.

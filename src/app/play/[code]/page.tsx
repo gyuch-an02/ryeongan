@@ -22,11 +22,11 @@ export default function PlayPage() {
 
   if (joinError) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-6">
+      <main className="h-screen flex items-center justify-center p-6 font-serif">
         <div className="text-center space-y-4">
           <p className="text-ink-warn">{joinError}</p>
-          <Link href="/" className="text-ink-accent underline">
-            로비로 돌아가기
+          <Link href="/" className="font-mono text-[11px] tracking-label uppercase text-ink-dim hover:text-ink-text transition-colors">
+            ← 로비로 돌아가기
           </Link>
         </div>
       </main>
@@ -35,8 +35,8 @@ export default function PlayPage() {
 
   if (!view) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        <p className="text-ink-dim animate-pulse">
+      <main className="h-screen flex items-center justify-center font-serif">
+        <p className="font-mono text-[11px] tracking-label uppercase text-ink-dim animate-blink">
           {connected ? "세션에 합류하는 중…" : "서버에 연결하는 중…"}
         </p>
       </main>
@@ -47,123 +47,157 @@ export default function PlayPage() {
   const waiting = scene?.waitingForPartner ?? false;
 
   return (
-    <main className="min-h-screen p-3 md:p-5 max-w-6xl mx-auto">
-      {/* 헤더 */}
-      <header className="flex items-center justify-between mb-4 text-sm">
-        <Link href="/" className="text-ink-dim hover:text-ink-text tracking-[0.25em]">
-          유천당
-        </Link>
-        <div className="flex items-center gap-3">
+    <div className="h-screen flex flex-col overflow-hidden">
+
+      {/* ── 헤더 ── */}
+      <header className="flex-shrink-0 flex items-center gap-6 h-[60px] px-6 border-b border-ink-border bg-gradient-to-b from-[#120d0c] to-ink-panel">
+        <div className="flex items-baseline gap-3.5">
+          <Link
+            href="/"
+            className="font-display font-extrabold text-[22px] tracking-[0.14em] text-ink-text hover:text-ink-soft transition-colors"
+          >
+            밍구라온
+          </Link>
+          {scene?.title && (
+            <span className="font-mono text-[11px] tracking-[0.16em] uppercase text-ink-dim pl-3.5 border-l border-ink-border">
+              {scene.title}
+            </span>
+          )}
+        </div>
+        <div className="ml-auto flex items-center gap-6">
           <button
             onClick={copyCode}
-            className="text-ink-dim hover:text-ink-text border border-ink-border rounded px-3 py-1"
-            title="세션 코드 복사"
+            className="font-mono text-xs tracking-[0.12em] text-ink-soft hover:text-ink-text transition-colors"
           >
-            코드 <span className="text-ink-text tracking-[0.2em]">{code}</span>
+            SESSION{" "}
+            <span className="text-ink-text font-medium">{code}</span>
             {copied && <span className="text-ink-spirit ml-2">복사됨</span>}
           </button>
-          <span
-            className={`text-xs ${connected ? "text-ink-spirit" : "text-ink-warn"}`}
-            title={connected ? "연결됨" : "연결 끊김"}
-          >
-            ●
-          </span>
+          <div className="flex items-center gap-2 font-mono text-[11px] tracking-[0.1em] text-ink-dim">
+            <span
+              className={`w-[7px] h-[7px] rounded-full ${
+                connected ? "bg-ink-spirit animate-breathe" : "bg-ink-warn"
+              }`}
+            />
+            {connected ? "2인 접속" : "연결 끊김"}
+          </div>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
-        {/* 본문 */}
-        <section className="space-y-5">
+      {/* ── 본문 3열 ── */}
+      <div className="flex-1 grid grid-cols-[322px_1fr_360px] min-h-0">
+
+        {/* 좌: 스탯·소지품·게이지 (SidePanel 내부에서 order-[-1]) */}
+        <SidePanel
+          name={view.you.name}
+          stats={view.you.stats}
+          inventory={view.you.inventory}
+          spiritLevel={view.world.spiritLevel}
+          partnerName={view.partner?.name ?? null}
+          partnerConnected={view.partner?.connected ?? false}
+        />
+
+        {/* 중앙: 내러티브 + 선택지 */}
+        <section className="flex flex-col min-h-0 border-r border-ink-border">
+
+          {/* 일시정지 배너 */}
           {view.status === "paused" && (
-            <div className="bg-ink-warn/10 border border-ink-warn/40 rounded-lg px-4 py-3 text-ink-warn text-sm">
-              파트너의 접속이 끊겼습니다. 둘 다 접속하면 이야기가 재개됩니다.
+            <div className="flex-shrink-0 px-[26px] py-2.5 bg-ink-warn/10 border-b border-ink-warn/30">
+              <p className="font-mono text-[11px] tracking-[0.1em] text-ink-warn">
+                파트너의 접속이 끊겼습니다 — 둘 다 접속하면 이야기가 재개됩니다.
+              </p>
             </div>
           )}
 
-          <article className="bg-ink-panel border border-ink-border rounded-lg p-6">
-            {scene?.title && (
-              <h2 className="text-ink-dim text-sm tracking-wider mb-4">{scene.title}</h2>
-            )}
-            <p className="narrative text-ink-text whitespace-pre-wrap">{scene?.text}</p>
-          </article>
+          {/* 장면 메타 */}
+          {scene?.title && (
+            <div className="flex-shrink-0 px-[26px] pt-[18px] font-mono text-[11px] tracking-[0.22em] uppercase text-ink-dim">
+              {scene.title}
+            </div>
+          )}
+
+          {/* 내러티브 */}
+          <div className="flex-1 overflow-y-auto px-[26px] pt-3.5 pb-10 min-h-0">
+            <div className="narrative whitespace-pre-wrap">{scene?.text}</div>
+          </div>
 
           {/* 결말 */}
           {view.status === "ending" && (
-            <div className="text-center space-y-4 py-4">
-              <p className="text-ink-spirit tracking-widest">— 막을 내립니다 —</p>
-              <Link href="/" className="inline-block text-ink-accent underline">
-                로비로 돌아가기
+            <div className="flex-shrink-0 text-center space-y-4 py-6 px-[26px] border-t border-ink-border">
+              <p className="font-mono text-[11px] tracking-[0.3em] uppercase text-ink-spirit">
+                — 막을 내립니다 —
+              </p>
+              <Link
+                href="/"
+                className="inline-block font-mono text-[11px] tracking-label uppercase text-ink-dim hover:text-ink-text transition-colors"
+              >
+                ← 로비로 돌아가기
               </Link>
             </div>
           )}
 
           {/* 게임 오버 */}
           {view.status === "gameover" && (
-            <div className="text-center space-y-4 py-4">
-              <p className="text-ink-warn tracking-widest">— 실패 —</p>
+            <div className="flex-shrink-0 text-center space-y-4 py-6 px-[26px] border-t border-ink-border">
+              <p className="font-mono text-[11px] tracking-[0.3em] uppercase text-ink-warn">
+                — 실패 —
+              </p>
+              {view.gameoverReason && (
+                <p className="font-serif text-sm text-ink-soft">{view.gameoverReason}</p>
+              )}
               <button
                 onClick={restart}
-                className="bg-ink-warn/15 border border-ink-warn/50 text-ink-text rounded px-6 py-2.5 hover:bg-ink-warn/25 transition"
+                className="choice inline-flex max-w-xs mx-auto justify-center"
               >
-                마지막 거점에서 다시 도전
+                <span className="txt">마지막 거점에서 다시 도전</span>
               </button>
             </div>
           )}
 
           {/* 선택지 */}
           {view.status === "playing" && scene && (
-            <div className="space-y-2">
+            <div className="flex-shrink-0 px-[26px] pb-[30px]">
               {waiting ? (
-                <div className="text-ink-dim text-sm py-3 animate-pulse">
+                <p className="font-mono text-[11px] tracking-[0.1em] text-ink-dim py-3 animate-blink">
                   선택을 마쳤습니다. 파트너의 선택을 기다리는 중…
-                </div>
+                </p>
               ) : scene.choices.length === 0 ? (
-                <div className="text-ink-dim text-sm py-3">
-                  이 장면에서 당신이 할 수 있는 일은 없습니다. 파트너에게 맡기세요.
-                </div>
+                <p className="font-mono text-[11px] tracking-[0.1em] text-ink-dim py-3">
+                  이 장면에서 당신이 할 수 있는 일은 없습니다.
+                </p>
               ) : (
-                scene.choices.map((c) => (
-                  <button
-                    key={c.id}
-                    disabled={c.locked}
-                    onClick={() => submit(c.id)}
-                    className={`block w-full text-left rounded px-4 py-3 border transition ${
-                      c.locked
-                        ? "border-ink-border text-ink-dim cursor-not-allowed opacity-60"
-                        : "border-ink-border text-ink-text hover:border-ink-accent hover:bg-ink-accent/10"
-                    }`}
-                  >
-                    <span className="text-ink-accent mr-2">▸</span>
-                    {c.label}
-                    {c.locked && c.lockedHint && (
-                      <span className="text-ink-warn text-xs ml-2">[{c.lockedHint}]</span>
-                    )}
-                  </button>
-                ))
+                <>
+                  <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-ink-dim mb-3">
+                    행동을 선택하시오 — 되돌릴 수 없음
+                  </p>
+                  {scene.choices.map((c, idx) => (
+                    <button
+                      key={c.id}
+                      disabled={c.locked}
+                      onClick={() => submit(c.id)}
+                      className="choice"
+                    >
+                      <span className="idx">{String.fromCharCode(65 + idx)}</span>
+                      <span className="txt">
+                        {c.label}
+                        {c.locked && c.lockedHint && (
+                          <span className="sub">{c.lockedHint}</span>
+                        )}
+                      </span>
+                    </button>
+                  ))}
+                </>
+              )}
+              {actionError && (
+                <p className="font-mono text-[11px] text-ink-warn mt-2">{actionError}</p>
               )}
             </div>
           )}
-
-          {actionError && (
-            <div className="text-ink-warn text-sm">{actionError}</div>
-          )}
         </section>
 
-        {/* 사이드: 상태 + 채팅 */}
-        <aside className="flex flex-col gap-4 lg:h-[calc(100vh-7rem)]">
-          <SidePanel
-            name={view.you.name}
-            stats={view.you.stats}
-            inventory={view.you.inventory}
-            spiritLevel={view.world.spiritLevel}
-            partnerName={view.partner?.name ?? null}
-            partnerConnected={view.partner?.connected ?? false}
-          />
-          <div className="flex-1 min-h-[260px]">
-            <Chat messages={view.chat} mySlot={slot} onSend={sendChat} />
-          </div>
-        </aside>
+        {/* 우: 무전 채널 */}
+        <Chat messages={view.chat} mySlot={slot} onSend={sendChat} />
       </div>
-    </main>
+    </div>
   );
 }

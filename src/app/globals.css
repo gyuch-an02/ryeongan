@@ -2,36 +2,163 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap");
+
 :root {
-  --font-mono: ui-monospace, SFMono-Regular, "Menlo", "Consolas", "D2Coding",
-    "Noto Sans Mono CJK KR", monospace;
+  --ink-bg:           #0e0b0a;
+  --ink-panel:        #16110f;
+  --ink-panel2:       #1e1714;
+  --ink-border:       #2c2320;
+  --ink-dim:          #6f635c;
+  --ink-soft:         #a99e95;
+  --ink-text:         #d7ccc2;
+  --ink-accent:       #9c4a33;
+  --ink-warn:         #c5503a;
+  --ink-spirit:       #9aac4e;
+  --ink-accent-soft:  rgba(156, 74, 51, 0.14);
+  --ink-spirit-soft:  rgba(154, 172, 78, 0.14);
 }
 
-html,
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+
 body {
-  background: #0a0a0c;
-  color: #d6d6dd;
-  font-family: var(--font-mono);
+  background: var(--ink-bg);
+  color: var(--ink-text);
+  font-family: "Noto Serif KR", serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
 }
 
-* {
-  box-sizing: border-box;
+:focus-visible {
+  outline: 1px solid var(--ink-accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--ink-accent-soft);
+  color: #e7ddd4;
+}
+
+/* 노이즈 오버레이 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: screen;
+}
+/* 비네팅 오버레이 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9001;
+  pointer-events: none;
+  background: radial-gradient(120% 100% at 50% 38%, transparent 52%, rgba(0, 0, 0, 0.55) 100%);
 }
 
 /* 스크롤바 */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: #26262e;
-  border-radius: 4px;
+  background: var(--ink-border);
+  border: 3px solid var(--ink-bg);
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+::-webkit-scrollbar-thumb:hover { background: #3a2e2a; }
+
+/* ── 내러티브 ── */
+.narrative {
+  max-width: none;
+  text-align: left;
+  font-family: "Noto Serif KR", serif;
+  font-size: 15px;
+  line-height: 1.64;
+  letter-spacing: 0.005em;
+  color: var(--ink-text);
+}
+.narrative p { margin: 0 0 0.8em; text-wrap: pretty; }
+.narrative .lead::first-letter {
+  font-family: "Nanum Myeongjo", serif;
+  font-weight: 700;
+  font-size: 1.5em;
+  line-height: 1;
+  color: var(--ink-soft);
+}
+.narrative .dim    { color: var(--ink-dim); }
+.narrative .spirit { color: var(--ink-spirit); }
+.narrative .warn   { color: var(--ink-warn); }
+.narrative .strong { color: #e7ddd4; font-weight: 600; }
+.narrative hr {
+  width: 56px;
+  margin: 1.4em 0;
+  border: 0;
+  border-top: 1px solid var(--ink-border);
 }
 
-.narrative {
-  white-space: pre-wrap;
-  line-height: 1.9;
+/* ── 선택지 ── */
+.choice {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  color: var(--ink-text);
+  border: 1px solid var(--ink-border);
+  border-radius: 2px;
+  padding: 9px 13px;
+  margin-bottom: 7px;
+  font-family: "Noto Serif KR", serif;
+  font-size: 14px;
+  line-height: 1.42;
+  transition: border-color 0.5s ease, color 0.4s ease;
+}
+.choice::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 0;
+  z-index: 0;
+  background: var(--ink-accent-soft);
+  border-right: 1px solid rgba(156, 74, 51, 0.35);
+  transition: width 0.68s cubic-bezier(0.22, 0.61, 0.25, 1);
+}
+.choice:hover          { border-color: #5a3a30; color: #e7ddd4; }
+.choice:hover::before  { width: 100%; }
+.choice:active::before { background: rgba(156, 74, 51, 0.22); }
+
+.choice > .idx {
+  position: relative; z-index: 1; flex: 0 0 auto;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px; color: var(--ink-dim);
+  padding-top: 1px; transition: color 0.4s ease;
+}
+.choice:hover > .idx { color: var(--ink-accent); }
+.choice > .txt { position: relative; z-index: 1; }
+.choice .sub {
+  display: block; margin-top: 3px;
+  font-size: 12px; color: var(--ink-dim);
+}
+
+.choice:disabled,
+.choice[aria-disabled="true"] {
+  opacity: 0.4; cursor: not-allowed; pointer-events: none;
+}
+
+/* ── 모노 라벨 유틸 ── */
+.label-mono {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
 }
